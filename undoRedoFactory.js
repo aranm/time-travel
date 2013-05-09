@@ -62,23 +62,27 @@
                undoStack.length = 0;
                redoStack.length = 0;
             },
-            undo = function() {
-               if (compoundMemento != null) {
-                  endCompoundDo();
+            undo = function () {
+               if (canUndo() === true) {
+                  if (compoundMemento != null) {
+                     endCompoundDo();
+                  }
+                  inUndoRedo = true;
+                  var top = undoStack.pop();
+                  redoStack.push(top.restore());
+                  inUndoRedo = false;
                }
-               inUndoRedo = true;
-               var top = undoStack.pop();
-               redoStack.push(top.restore());
-               inUndoRedo = false;
             },
-            redo = function() {
-               if (compoundMemento != null) {
-                  endCompoundDo();
+            redo = function () {
+               if (canRedo() === true) {
+                  if (compoundMemento != null) {
+                     endCompoundDo();
+                  }
+                  inUndoRedo = true;
+                  var top = redoStack.pop();
+                  undoStack.push(top.restore());
+                  inUndoRedo = false;
                }
-               inUndoRedo = true;
-               var top = redoStack.pop();
-               undoStack.push(top.restore());
-               inUndoRedo = false;
             },
             peekUndo = function() {
                if (canUndo() == false) {
